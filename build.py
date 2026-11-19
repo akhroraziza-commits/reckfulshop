@@ -36,6 +36,11 @@ def som(v):
     return f"{n:,}".replace(",", " ")
 
 
+def som_int(v):
+    d = "".join(ch for ch in str(v).split(".")[0] if ch.isdigit())
+    return int(d or 0)
+
+
 def card(r):
     e = html.escape
     title = r["title"].strip()
@@ -45,10 +50,14 @@ def card(r):
     cat = r["product_type"] or "Boshqa"
     sale = r["sale_price"]
     price = (f'<s>{som(r["price"])}</s> <b>{som(sale)} so\'m</b>' if sale else f'<b>{som(r["price"])} so\'m</b>')
-    return (f'<a class="card" href="{e(link)}" data-cat="{e(cat)}" data-name="{e(title.lower())}">'
+    uzs = som_int(sale or r["price"])
+    return (f'<div class="card" data-id="{e(r["id"])}" data-cat="{e(cat)}" data-name="{e(title.lower())}" '
+            f'data-title="{e(name)}" data-price="{uzs}" data-img="{e(img)}">'
+            f'<a class="cl" href="{e(link)}">'
             f'<span class="ph"><img src="{e(img)}" alt="{e(title)}" loading="lazy" width="400" height="400"></span>'
             f'<span class="cat">{e(cat)}</span><span class="name">{e(name)}</span>'
-            f'<span class="price">{price}</span><span class="buy">Sotib olish</span></a>')
+            f'<span class="price">{price}</span></a>'
+            f'<button class="buy" type="button">Savatga</button></div>')
 
 
 def build(rows):
@@ -131,7 +140,8 @@ h2{font-size:clamp(22px,4vw,34px);font-weight:900;text-transform:uppercase;lette
 #q{flex:1 1 220px;min-width:0;background:var(--bg2);border:1px solid var(--line);color:var(--tx);padding:10px 14px;font:inherit;font-size:14px;outline:0}
 #q:focus{border-color:var(--ac)}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.card{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--line);padding:12px;transition:.15s}
+.card,.cl{display:flex;flex-direction:column}.cl{flex:1}
+.card{background:var(--bg2);border:1px solid var(--line);padding:12px;transition:.15s}
 .card:hover{border-color:var(--ac);transform:translateY(-3px)}
 .ph{display:block;background:#fff;aspect-ratio:1;overflow:hidden;margin-bottom:12px}
 .ph img{width:100%;height:100%;object-fit:contain;display:block}
@@ -139,8 +149,27 @@ h2{font-size:clamp(22px,4vw,34px);font-weight:900;text-transform:uppercase;lette
 .name{font-weight:800;text-transform:uppercase;font-size:14px;line-height:1.25;margin:6px 0 10px;flex:1}
 .price{font-size:17px;margin-bottom:12px}
 .price s{color:var(--mut);font-size:13px}
-.buy{display:block;text-align:center;background:var(--ac);font-weight:800;text-transform:uppercase;font-size:12px;letter-spacing:.08em;padding:11px}
-.card:hover .buy{background:var(--ok);color:#111}
+.buy{display:block;width:100%;border:0;color:#fff;font-family:inherit;cursor:pointer;text-align:center;background:var(--ac);font-weight:800;text-transform:uppercase;font-size:12px;letter-spacing:.08em;padding:11px}
+.buy:hover,.buy.in{background:var(--ok);color:#111}
+#cb{background:var(--ac);border:0;color:#fff;font:inherit;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:9px 14px;cursor:pointer;margin-left:14px;white-space:nowrap}
+#cb b{background:#fff;color:#111;border-radius:99px;padding:1px 7px;margin-left:6px}
+#fab{display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:40;background:var(--ok);color:#111;border:0;font:inherit;font-weight:900;text-transform:uppercase;font-size:14px;padding:15px;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+#fab.on{display:block}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none}
+#dr{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--bg2);border-left:1px solid var(--line);z-index:60;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s}
+body.co #ov{display:block}body.co #dr{transform:none}body.co{overflow:hidden}
+#dr h3{display:flex;justify-content:space-between;align-items:center;padding:16px;font-size:17px;text-transform:uppercase;border-bottom:1px solid var(--line)}
+#dx{background:none;border:0;color:var(--tx);font-size:26px;line-height:1;cursor:pointer;padding:0 6px}
+#li{flex:1;overflow:auto;padding:6px 16px}
+.it{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.it img{width:56px;height:56px;object-fit:contain;background:#fff}
+.it span{font-size:13px;font-weight:700;line-height:1.25}.it small{display:block;color:var(--mut);font-weight:400;margin-top:3px}
+.qt{display:flex;align-items:center;gap:8px}.qt button{width:30px;height:30px;background:transparent;border:1px solid var(--line);color:var(--tx);font-size:17px;cursor:pointer}
+#bo{padding:30px 16px;color:var(--mut)}
+#ft{padding:16px;border-top:1px solid var(--line)}
+#ft p{display:flex;justify-content:space-between;font-size:17px;margin-bottom:12px}
+#go{display:block;text-align:center;background:var(--ok);color:#111;font-weight:900;text-transform:uppercase;padding:15px;font-size:14px}
+#ft small{display:block;color:var(--mut);font-size:12px;margin-top:10px}
 #empty{display:none;color:var(--mut);padding:30px 0}
 .how{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -152,7 +181,7 @@ footer .wrap{display:flex;gap:24px;flex-wrap:wrap;justify-content:space-between}
 footer a{color:var(--tx);border-bottom:1px solid var(--line)}
 footer small{display:block;margin-top:10px;max-width:560px;font-size:12px}
 @media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}.feat{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}.steps{grid-template-columns:1fr}header nav a.hide{display:none}.card{padding:8px}.name{font-size:12.5px}.price{font-size:15px}.hero .wrap{padding:44px 16px 40px}}
+@media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}.steps{grid-template-columns:1fr}header nav a:not(:first-child){display:none}#cb{margin-left:10px;padding:8px 10px;font-size:12px}.card{padding:8px}.name{font-size:12.5px}.price{font-size:15px}.hero .wrap{padding:44px 16px 40px}}
 @media(prefers-reduced-motion:reduce){.tick span{animation:none}html{scroll-behavior:auto}}
 </style>
 </head>
@@ -161,6 +190,7 @@ footer small{display:block;margin-top:10px;max-width:560px;font-size:12px}
 <header><div class="wrap">
 <a class="logo" href="#top">RECKFUL<i>SHOP.UZ</i></a>
 <nav><a href="#katalog">Katalog</a><a class="hide" href="#qanday">Qanday xarid qilinadi</a><a href="@@SHOP@@/katalog?brend=Reckful&@@UTM@@">LIFESPORT</a></nav>
+<button id="cb" type="button" aria-label="Savatcha">Savat<b id="cn">0</b></button>
 </div></header>
 
 <div class="hero" id="top"><div class="wrap">
@@ -191,8 +221,8 @@ footer small{display:block;margin-top:10px;max-width:560px;font-size:12px}
 <h2>Qanday xarid qilinadi</h2>
 <div class="steps">
 <div><b>01</b><strong>Mahsulotni tanlang</strong>Katalogdan keraklisini toping.</div>
-<div><b>02</b><strong>«Sotib olish» ni bosing</strong>LIFESPORT saytidagi mahsulot sahifasi ochiladi.</div>
-<div><b>03</b><strong>Buyurtma bering</strong>Savatga qo'shing, yetkazib berish yoki filialdan olib ketishni tanlang.</div>
+<div><b>02</b><strong>«Savatga» ni bosing</strong>Bir nechta mahsulotni savatga yig'ing.</div>
+<div><b>03</b><strong>Buyurtma bering</strong>Savatni oching — u LIFESPORT saytida tayyor bo'ladi: yetkazib berish yoki filialdan olib ketishni tanlang.</div>
 </div>
 </div></section>
 
@@ -202,7 +232,36 @@ footer small{display:block;margin-top:10px;max-width:560px;font-size:12px}
 <div>Buyurtma va savollar:<br><a href="tel:+998555169916">55 516 99 16</a><br><br><a href="@@SHOP@@/?@@UTM@@">lifesportpit.uz</a></div>
 </div></footer>
 
+<button id="fab" type="button"></button>
+<div id="ov"></div>
+<aside id="dr" aria-label="Savatcha"><h3>Savatcha<button id="dx" type="button" aria-label="Yopish">&times;</button></h3>
+<div id="li"></div>
+<div id="ft"><p><span>Jami</span><b id="su"></b></p><a id="go" href="#">Buyurtma berish</a>
+<small>Buyurtma va to'lov lifesportpit.uz saytida — savatingiz o'sha yerda tayyor ochiladi.</small></div></aside>
 <script>
+(function(){
+var K='rk_savat',P={},C={},$=function(i){return document.getElementById(i)};
+[].forEach.call(document.querySelectorAll('.card'),function(c){P[c.dataset.id]={t:c.dataset.title,p:+c.dataset.price,i:c.dataset.img,el:c}});
+try{var o=JSON.parse(localStorage.getItem(K)||'{}');for(var k in o)if(P[k]&&o[k]>0)C[k]=Math.min(o[k]|0,20)}catch(e){}
+function fm(n){return String(n).replace(/\B(?=(\d{3})+$)/g,' ')+" so'm"}
+function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function draw(){var n=0,s=0,h='',t=[],k;
+for(k in P){var b0=P[k].el.querySelector('.buy');b0.className='buy';b0.textContent='Savatga'}
+for(k in C){var p=P[k];n+=C[k];s+=p.p*C[k];t.push(k+'x'+C[k]);
+var b=p.el.querySelector('.buy');b.className='buy in';b.textContent='Savatda: '+C[k]+' ta';
+h+='<div class="it"><img src="'+esc(p.i)+'" alt=""><span>'+esc(p.t)+'<small>'+fm(p.p)+'</small></span><div class="qt"><button data-k="'+k+'" data-d="-1">&minus;</button>'+C[k]+'<button data-k="'+k+'" data-d="1">+</button></div></div>'}
+$('cn').textContent=n;$('li').innerHTML=h||'<div id="bo">Savatcha bo\'sh. Katalogdan mahsulot tanlang.</div>';
+$('ft').style.display=n?'':'none';$('su').textContent=fm(s);
+$('go').href='@@SHOP@@/savat/tashqi?t='+t.join(',')+'&@@UTM@@';
+$('fab').className=n?'on':'';$('fab').textContent='Savatcha: '+n+' ta — '+fm(s);
+try{localStorage.setItem(K,JSON.stringify(C))}catch(e){}}
+function add(k,d){var v=Math.min((C[k]||0)+d,20);if(v>0)C[k]=v;else delete C[k];draw()}
+document.addEventListener('click',function(e){var t=e.target;
+if(t.classList.contains('buy')){add(t.parentNode.dataset.id,1)}
+else if(t.dataset&&t.dataset.k){add(t.dataset.k,+t.dataset.d)}
+else if(t.closest('#cb')||t.id==='fab'){document.body.classList.add('co')}
+else if(t.id==='ov'||t.id==='dx'){document.body.classList.remove('co')}});
+draw()})();
 (function(){
 var cards=[].slice.call(document.querySelectorAll('.card')),chips=[].slice.call(document.querySelectorAll('.chip')),
 q=document.getElementById('q'),empty=document.getElementById('empty'),cat='';
