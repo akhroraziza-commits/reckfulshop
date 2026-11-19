@@ -3,15 +3,15 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "17 */6 * * *"   # har 6 soatda narx/qoldiq yangilanadi
+    - cron: "*/30 * * * *"   # har 30 daqiqada: yangi mahsulot qo'shiladi, tugagani olib tashlanadi
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -24,8 +24,28 @@ jobs:
         with:
           python-version: "3.12"
       - run: python build.py
-      - uses: actions/upload-pages-artifact@v3
+      # Jadval bo'yicha ishga tushganda: sayt o'zgarmagan bo'lsa qayta chiqarilmaydi
+      - id: farq
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && curl -fsS -m 30 https://reckfulshop.uz/ -o live.html && cmp -s live.html site/index.html; then
+            echo "ozgardi=yoq" >> "$GITHUB_OUTPUT"
+          else
+            echo "ozgardi=ha" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.farq.outputs.ozgardi == 'ha'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: site
       - id: d
+        if: steps.farq.outputs.ozgardi == 'ha'
         uses: actions/deploy-pages@v4
+      # GitHub 60 kun commit bo'lmasa jadvalni o'chirib qo'yadi — 30 kunda bir bo'sh commit
+      - name: Jadval o'chib qolmasin
+        run: |
+          last=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - last )) -gt 2592000 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit --allow-empty -m "keepalive"
+            git push
+          fi
