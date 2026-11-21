@@ -92,6 +92,7 @@ TEMPLATE = r"""<!doctype html>
 <html lang="uz">
 <head>
 <meta charset="utf-8">
+<meta name="msvalidate.01" content="39DC2374D479A620611AA32A23E18943">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reckful O'zbekistonda — pre-workout, kreatin, protein | reckfulshop.uz</title>
 <meta name="description" content="Reckful sport ozuqalari Toshkentda: pre-workout, kreatin, protein, vitaminlar. @@N@@ ta mahsulot, narxlar so'mda. Xarid LIFESPORT (lifesportpit.uz) orqali — 11 filial va yetkazib berish.">
